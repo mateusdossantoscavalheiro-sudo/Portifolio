@@ -296,7 +296,7 @@
             icon: "fa-microchip",
             github: "https://github.com/mateusscavalheiro-afk/PROVA2_MONITORAMENTO_DE_MOTOR",
             pdf: "./assets/motor_monitoring/Engine_Monitoring_Project.pdf",
-            media: { type: "image", src: "./assets/motor_monitoring/miniature_p1.png" },
+            media: { type: "image", src: ["./assets/engine_monitoring/miniature_p1.png", "./assets/engine_monitoring/miniature_p2.png", "./assets/engine_monitoring/miniature_p3.png"], interval: 3000 },
             pt: { title: "Monitoramento de Motor", subtitle: "IoT & Integração", platform: "VSCode (C++) & IntelliJ (Java)", desc: "Desenvolvimento de um cibersistema para monitoramento de um motor no setor industrial. O projeto integra hardware (ESP32) e software (Java) utilizando protocolo MQTT para garantir a segurança operacional e a coleta de dados de telemetria em tempo real." },
             en: { title: "Engine Monitoring", subtitle: "IoT & Integration", platform: "VSCode (C++) & IntelliJ (Java)", desc: "Development of a cyber-physical system for industrial engine monitoring. The project integrates hardware (ESP32) and software (Java) using the MQTT protocol to ensure operational safety and real-time telemetry data collection." },
             es: { title: "Monitoreo de Motor", subtitle: "IoT e Integración", platform: "VSCode (C++) & IntelliJ (Java)", desc: "Desarrollo de un cibersistema para el monitoreo de un motor en el sector industrial. El proyecto integra hardware (ESP32) y software (Java) utilizando el protocolo MQTT para garantizar la segurança operativa y la recolección de datos de telemetría en tiempo real." },
@@ -310,7 +310,7 @@
             icon: "fa-network-wired", // Icons from fontawesome.com
             github: "https://github.com/mateusdossantoscavalheiro-sudo/Nexus_Project",
             pdf: "./assets/seu_projeto/documento.pdf",
-            media: { type: "image", src: "./assets/seu_projeto/capa.png" },
+            media: { type: "image", src: ["./assets/nexus/miniature_p1.png", "./assets/nexus/miniature_p2.png", "./assets/nexus/miniature_p3.png"], interval: 3000 },
             pt: { title: "Automação Nexus", subtitle: "Sistema Completo de Automação Industrial", platform: "C++, Java, JS", desc: "Muito mais que um projeto de sensores, o Nexus é a recriação fiel de um ambiente de automação fabril. O projeto une a precisão da eletrônica embarcada com a escalabilidade do software empresarial, garantindo integridade de dados do sensor ao banco de dados." },
             en: { title: "Nexus Automation", title: "Nexus Automation", subtitle: "Complete Industrial Automation System", platform: "C++, Java, JS", desc: "Far more than a simple sensor project, Nexus is a faithful recreation of a factory automation environment. It merges the precision of embedded electronics with enterprise software scalability, ensuring data integrity from the sensor to the database." },
             es: { title: "Automatización Nexus", subtitle: "Sistema Completo de Automatización Industrial", platform: "C++, Java, JS", desc: "Mucho más que un simple proyecto de sensores, Nexus es la recreación fiel de un entorno de automatización fabril. El proyecto une la precisión de la electrónica embebida con la escalabilidad del software empresarial, garantizando la integridad de los datos desde el sensor hasta la base de datos." },
@@ -375,41 +375,63 @@
         });
     }
 
+    let carouselInterval;
+
     function openProject(id) {
         const p = projectsData.find(item => item.id === id);
         const lang = p[currentLang];
         const ui = uiStrings[currentLang];
+
+        clearInterval(carouselInterval);
+
         document.getElementById('modal-title').innerText = lang.title;
         document.getElementById('modal-desc').innerText = lang.desc;
         document.getElementById('modal-date').innerText = p.date;
         document.getElementById('modal-platform').innerText = lang.platform;
         document.getElementById('modal-status').innerText = ui[p.statusKey];
+
         document.getElementById('label-date').innerText = ui.dateLabel;
         document.getElementById('label-status').innerText = ui.statusLabel;
         document.getElementById('label-platform').innerText = ui.platformLabel;
         document.getElementById('label-action').innerText = ui.actionLabel;
+
         const mediaBox = document.getElementById('modal-media');
-        mediaBox.innerHTML = p.media.type === "video"
-            ? `<video autoplay muted loop playsinline><source src="${p.media.src}" type="video/mp4"></video>`
-            : `<img src="${p.media.src}" onerror="this.src='https://via.placeholder.com/400x250?text=Preview+Indisponível'">`;
+
+        if (p.media.type === "image" && Array.isArray(p.media.src)) {
+            let currentIndex = 0;
+
+            // Função que gera a tag de imagem com a transição embutida
+            const updateImage = (index) => {
+                mediaBox.innerHTML = `<img src="${p.media.src[index]}" id="carousel-img" style="opacity: 1; transition: opacity 0.6s ease-in-out; width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/400x250?text=Preview+Indisponível'">`;
+            };
+
+            updateImage(currentIndex);
+
+            carouselInterval = setInterval(() => {
+                const img = document.getElementById('carousel-img');
+                if (img) {
+                    // 1. Começa a sumir
+                    img.style.opacity = '0';
+
+                    // 2. Espera o tempo da transição (600ms) para trocar o SRC e aparecer de novo
+                    setTimeout(() => {
+                        currentIndex = (currentIndex + 1) % p.media.src.length;
+                        img.src = p.media.src[currentIndex];
+                        img.style.opacity = '1';
+                    }, 600);
+                }
+            }, p.media.interval || 3000);
+
+        } else {
+            // Caso seja apenas uma imagem ou vídeo
+            mediaBox.innerHTML = p.media.type === "video"
+                ? `<video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;"><source src="${p.media.src}" type="video/mp4"></video>`
+                : `<img src="${p.media.src}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://via.placeholder.com/400x250?text=Preview+Indisponível'">`;
+        }
+
         document.getElementById('modal-github').href = p.github;
         document.getElementById('modal-pdf').href = `./${p.pdf}`;
         openModal('project-modal');
-    }
-
-    function ask(key) {
-        const box = document.getElementById("chat-box");
-        const u = document.createElement("div");
-        u.className = "message user-msg";
-        u.innerText = uiStrings[currentLang][key];
-        box.appendChild(u);
-        setTimeout(() => {
-            const b = document.createElement("div");
-            b.className = "message bot-msg";
-            b.innerText = uiStrings[currentLang]['skillAnswer'];
-            box.appendChild(b);
-            box.scrollTop = box.scrollHeight;
-        }, 600);
     }
 
     function changeLanguage(lang) {
@@ -434,7 +456,7 @@
     }
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
+    function closeAllModals() { clearInterval(carouselInterval); document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
     window.onload = loadState;
