@@ -296,7 +296,7 @@
             icon: "fa-microchip",
             github: "https://github.com/mateusscavalheiro-afk/PROVA2_MONITORAMENTO_DE_MOTOR",
             pdf: "./assets/motor_monitoring/Engine_Monitoring_Project.pdf",
-            media: { type: "image", src: ["./assets/engine_monitoring/miniature_p1.png", "./assets/engine_monitoring/miniature_p2.png", "./assets/engine_monitoring/miniature_p3.png"], interval: 3000 },
+            media: { type: "image", src: ["./assets/engine_monitoring/miniature_p1.png", "./assets/engine_monitoring/miniature_p2.png", "./assets/engine_monitoring/miniature_p3.png", "./assets/engine_monitoring/miniature_p4.png", "./assets/engine_monitoring/miniature_p5.png"], interval: 4000 },
             pt: { title: "Monitoramento de Motor", subtitle: "IoT & Integração", platform: "VSCode (C++) & IntelliJ (Java)", desc: "Desenvolvimento de um cibersistema para monitoramento de um motor no setor industrial. O projeto integra hardware (ESP32) e software (Java) utilizando protocolo MQTT para garantir a segurança operacional e a coleta de dados de telemetria em tempo real." },
             en: { title: "Engine Monitoring", subtitle: "IoT & Integration", platform: "VSCode (C++) & IntelliJ (Java)", desc: "Development of a cyber-physical system for industrial engine monitoring. The project integrates hardware (ESP32) and software (Java) using the MQTT protocol to ensure operational safety and real-time telemetry data collection." },
             es: { title: "Monitoreo de Motor", subtitle: "IoT e Integración", platform: "VSCode (C++) & IntelliJ (Java)", desc: "Desarrollo de un cibersistema para el monitoreo de un motor en el sector industrial. El proyecto integra hardware (ESP32) y software (Java) utilizando el protocolo MQTT para garantizar la segurança operativa y la recolección de datos de telemetría en tiempo real." },
@@ -399,10 +399,14 @@
 
         if (p.media.type === "image" && Array.isArray(p.media.src)) {
             let currentIndex = 0;
+            const fadeTime = 1200;
+            const stayTime = 4000; // Imagem fica x segundos parada
+            const totalCycle = stayTime + (fadeTime * 2);
 
-            // Função que gera a tag de imagem com a transição embutida
             const updateImage = (index) => {
-                mediaBox.innerHTML = `<img src="${p.media.src[index]}" id="carousel-img" style="opacity: 1; transition: opacity 0.6s ease-in-out; width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/400x250?text=Preview+Indisponível'">`;
+                mediaBox.innerHTML = `<img src="${p.media.src[index]}" id="carousel-img"
+                    style="opacity: 1; transition: opacity ${fadeTime}ms ease-in-out; width: 100%; height: 100%; object-fit: cover;"
+                    onerror="this.src='https://via.placeholder.com/400x250?text=Preview+Indisponível'">`;
             };
 
             updateImage(currentIndex);
@@ -410,20 +414,18 @@
             carouselInterval = setInterval(() => {
                 const img = document.getElementById('carousel-img');
                 if (img) {
-                    // 1. Começa a sumir
                     img.style.opacity = '0';
-
-                    // 2. Espera o tempo da transição (600ms) para trocar o SRC e aparecer de novo
                     setTimeout(() => {
                         currentIndex = (currentIndex + 1) % p.media.src.length;
                         img.src = p.media.src[currentIndex];
-                        img.style.opacity = '1';
-                    }, 600);
+                        setTimeout(() => {
+                            img.style.opacity = '1';
+                        }, 100);
+                    }, fadeTime);
                 }
-            }, p.media.interval || 3000);
+            }, totalCycle);
 
         } else {
-            // Caso seja apenas uma imagem ou vídeo
             mediaBox.innerHTML = p.media.type === "video"
                 ? `<video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;"><source src="${p.media.src}" type="video/mp4"></video>`
                 : `<img src="${p.media.src}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://via.placeholder.com/400x250?text=Preview+Indisponível'">`;
