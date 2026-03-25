@@ -1,2 +1,2 @@
 # Portifolio
-Meu portifolio para exibição/armazenamento de projetos e trabalhos que me orgulho de ter feito/participado
+My portfolio for displaying/storing projects and works that I am proud to have done/participated in.
