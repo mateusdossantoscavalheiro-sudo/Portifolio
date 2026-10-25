@@ -1,0 +1,15 @@
+{
+  "headerTitle": "Mateus | Ingeniería y Desarrollo",
+  "menu": "Menú",
+  "sidebarProjects": "PROYECTOS",
+  "btnContact": "Contacto",
+  "dateLabel": "Creado en:",
+  "statusLabel": "Estado:",
+  "platformLabel": "Plataforma:",
+  "actionLabel": "Acceder al proyecto:",
+  "statusComplete": "Completado",
+  "statusIncomplete": "En desarrollo",
+  "btnGithub": "GITHUB",
+  "btnPdf": "DOCUMENTACIÓN",
+  "btnDemo": "PROBAR"
+}
